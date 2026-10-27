@@ -1,0 +1,7 @@
+---
+- name: Konfiguracja Pi
+  hosts: personal
+  become: true
+
+  roles:
+    - base

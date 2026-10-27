@@ -1,0 +1,4 @@
+---
+- name: Report change of a file
+  ansible.builtin.debug:
+    msg: "host-info.txt has been changed"

@@ -1,0 +1,41 @@
+# --- Klucze i certyfikaty ---
+*.pem
+*.key
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+id_ed25519_sk
+id_ed25519_sk.pub
+*.age
+keys.txt
+
+# --- Sekrety i zmienne srodowiskowe ---
+.env
+.env.*
+!.env.example
+*.secret
+secrets.yml
+.vault_pass
+.vault_password
+vault_pass*
+
+# --- Terraform ---
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+*.tfvars
+!example.tfvars
+
+# --- Ansible: pliki robocze ---
+*.retry
+.ansible/
+
+# --- Edytor i system ---
+*.swp
+*.swo
+*~
+.DS_Store
+.idea/
+.vscode/

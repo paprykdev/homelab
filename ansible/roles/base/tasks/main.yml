@@ -1,0 +1,20 @@
+---
+- name: Install packages
+  ansible.builtin.apt:
+    name: "{{ base_packages }}"
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Create testing catalog
+  ansible.builtin.file:
+    path: "{{ base_test_dir }}"
+    state: directory
+    mode: "{{ base_test_dir_mode }}"
+
+- name: Save info about host in a file
+  ansible.builtin.template:
+    src: host-info.txt.j2
+    dest: "{{ base_test_dir }}/host-info.txt"
+    mode: "0644"
+  notify: Report change of a file

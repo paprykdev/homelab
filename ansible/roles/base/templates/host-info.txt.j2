@@ -1,0 +1,4 @@
+Host: {{ inventory_hostname }}
+System: {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}
+Pamięć (MB): {{ ansible_facts['memtotal_mb'] }}
+Zarządzane przez Ansible i mnie hehe

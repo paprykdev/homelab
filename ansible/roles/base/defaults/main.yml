@@ -1,0 +1,5 @@
+---
+base_packages:
+  - htop
+base_test_dir: /opt/ansible-test
+base_test_dir_mode: "0755"

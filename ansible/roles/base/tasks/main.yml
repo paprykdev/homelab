@@ -18,3 +18,10 @@
     dest: "{{ base_test_dir }}/host-info.txt"
     mode: "0644"
   notify: Report change of a file
+
+- name: Save secret of the app
+  ansible.builtin.copy:
+    content: "{{ base_app_secret }}\n"
+    dest: "{{ base_test_dir }}/app-secret.txt"
+    mode: "0600"
+  no_log: true

@@ -1,0 +1,77 @@
+---
+- name: Check if this system version is supported
+  ansible.builtin.uri:
+    url: "{{ tailscale_pkgs_url }}/installer-supported"
+    return_content: true
+  register: tailscale_supported
+  failed_when: "'OK' not in tailscale_supported.content"
+  changed_when: false
+  check_mode: false
+
+- name: Download keyring of Tailscale
+  ansible.builtin.get_url:
+    url: "{{ tailscale_pkgs_url }}.noarmor.gpg"
+    dest: /usr/share/keyrings/tailscale-archive-keyring.gpg
+    mode: "0644"
+
+- name: Delete old tailscale files
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/tailscale.list
+    state: absent
+
+- name: Add Tailscale repository
+  ansible.builtin.deb822_repository:
+    name: tailscale
+    types: deb
+    uris: "{{ tailscale_repo_base }}"
+    suites: "{{ ansible_facts['distribution_release'] }}"
+    components: main
+    signed_by: /usr/share/keyrings/tailscale-archive-keyring.gpg
+    state: present
+
+- name: Install packages
+  ansible.builtin.apt:
+    name: "{{ tailscale_packages }}"
+    state: present
+    update_cache: true
+    cache_valid_time: 1800
+
+- name: Start and enable tailscaled
+  ansible.builtin.systemd_service:
+    name: tailscaled
+    state: started
+    enabled: true
+
+- name: Check tailscaled status
+  ansible.builtin.command: tailscale status --json
+  register: tailscale_status
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: Connect to tailnet
+  when: >-
+    (tailscale_status.stdout | default('{}', true) | from_json).BackendState
+    | default('') != 'Running'
+  no_log: true
+  block:
+    - name: Create dir
+      ansible.builtin.file:
+        path: "{{ tailscale_authkey_dir }}"
+        state: directory
+        mode: "0700"
+    - name: Save key to a file
+      ansible.builtin.copy:
+        content: "{{ tailscale_authkey }}"
+        dest: "{{ tailscale_authkey_dir }}/authkey.txt"
+        mode: "0600"
+    - name: Connect server to tailnet
+      ansible.builtin.command: >-
+        tailscale up
+        --authkey=file:{{ tailscale_authkey_dir }}/authkey.txt
+        --hostname={{ inventory_hostname }}
+  always:
+    - name: Delete key from disk
+      ansible.builtin.file:
+        path: "{{ tailscale_authkey_dir }}"
+        state: absent

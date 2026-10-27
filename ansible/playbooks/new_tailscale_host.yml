@@ -1,0 +1,7 @@
+---
+- name: Tailscale setup
+  hosts: personal
+  become: true
+
+  roles:
+    - tailscale

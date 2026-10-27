@@ -1,0 +1,13 @@
+---
+tailscale_packages:
+  - python3-debian
+  - tailscale
+tailscale_track: stable
+tailscale_repo_base: >-
+  https://pkgs.tailscale.com/{{ tailscale_track }}/{{
+  ansible_facts['distribution'] | lower }}
+tailscale_pkgs_url: >-
+  https://pkgs.tailscale.com/{{ tailscale_track }}/{{
+  ansible_facts['distribution'] | lower }}/{{
+  ansible_facts['distribution_release'] }}
+tailscale_authkey_dir: /run/tailscale-authkey
